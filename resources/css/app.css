@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50:  #FFFFFF;   /* blanc pur */   /* fond de base */
+  --color-brand-200: #E7F1A8;   /* vert clair : boutons d'action, badges */
+  --color-brand-400: #95B1EE;   /* bleu clair : blocs, accents */
+  --color-brand-700: #364C84;   /* bleu foncé : textes, navbar, boutons principaux */
+  --color-brand-900: #1F2C50;   /* bleu très foncé pour les titres */
+}
+
+@layer base {
+  body { @apply bg-brand-50 text-brand-900 font-sans antialiased; }
+}
+
+@layer components {
+  .btn-primary { @apply inline-flex items-center justify-center rounded-full bg-brand-700 px-6 py-3 font-semibold text-white transition hover:bg-brand-900; }
+  .btn-accent  { @apply inline-flex items-center justify-center rounded-full bg-brand-200 px-6 py-3 font-semibold text-brand-700 transition hover:brightness-95; }
+  .card        { @apply rounded-3xl border border-brand-700/10 bg-white p-5 shadow-sm; }
+  .badge       { @apply inline-block rounded-full bg-brand-200 px-3 py-1 text-xs font-semibold text-brand-700; }
+  .input       { @apply w-full rounded-full border border-brand-700/20 bg-white px-5 py-3 outline-none focus:border-brand-700 focus:ring-2 focus:ring-brand-400/40; }
+}
