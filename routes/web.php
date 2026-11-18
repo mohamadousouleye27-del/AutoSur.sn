@@ -13,6 +13,15 @@ use App\Http\Controllers\Insurer\OfferController;
 use App\Http\Controllers\Insurer\QuoteRequestController;
 use App\Http\Controllers\Insurer\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Garage\AppointmentController;
+use App\Http\Controllers\Garage\DashboardController as GarageDashboardController;
+use App\Http\Controllers\Tow\DashboardController as TowDashboardController;
+use App\Http\Controllers\Tow\SosJobController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\FinanceController;
+use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::view('/', 'home')->name('home');
 
@@ -32,20 +41,7 @@ Route::post('/deconnexion', [AuthController::class, 'logout'])->middleware('auth
 
 Route::middleware('auth')->group(function () {
 
-    /* Espaces provisoires (construits aux étapes suivantes) */
-    $spaces = [
-        'garage'    => 'Garage',
-        'depanneur' => 'Dépanneur',
-        'admin'     => 'Administrateur',
-    ];
 
-    foreach ($spaces as $role => $label) {
-        Route::middleware("role:$role")
-            ->prefix($role)->name("$role.")
-            ->group(function () use ($label) {
-                Route::view('/', 'dashboards.placeholder', ['space' => $label])->name('dashboard');
-            });
-    }
 
     /* ---------- Espace client ---------- */
     Route::middleware('role:client')->prefix('client')->name('client.')->group(function () {
@@ -93,7 +89,7 @@ Route::middleware('auth')->group(function () {
     });
 
     /* ---------- Espace assurance ---------- */
-    Route::middleware('role:assurance')->prefix('assurance')->name('assurance.')->group(function () {
+        Route::middleware(['role:assurance', 'partner'])->prefix('assurance')->name('assurance.')->group(function () {
         Route::get('/', InsurerDashboardController::class)->name('dashboard');
 
         Route::get('demandes', [QuoteRequestController::class, 'index'])->name('requests.index');
@@ -105,4 +101,51 @@ Route::middleware('auth')->group(function () {
 
         Route::get('souscriptions', [SubscriptionController::class, 'index'])->name('subscriptions.index');
     });
+
+
+        /* ---------- Espace garage ---------- */
+        Route::middleware(['role:garage', 'partner'])->prefix('garage')->name('garage.')->group(function () {
+        Route::get('/', GarageDashboardController::class)->name('dashboard');
+
+        Route::get('rendez-vous', [AppointmentController::class, 'index'])->name('appointments.index');
+        Route::post('rendez-vous/{appointment}/confirmer', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+        Route::post('rendez-vous/{appointment}/terminer', [AppointmentController::class, 'complete'])->name('appointments.complete');
+        Route::post('rendez-vous/{appointment}/liberer', [AppointmentController::class, 'release'])->name('appointments.release');
+    });
+
+    /* ---------- Espace dépanneur ---------- */
+        Route::middleware(['role:depanneur', 'partner'])->prefix('depanneur')->name('depanneur.')->group(function () {
+        Route::get('/', [TowDashboardController::class, 'index'])->name('dashboard');
+        Route::post('disponibilite', [TowDashboardController::class, 'toggle'])->name('availability');
+
+        Route::get('demandes', [SosJobController::class, 'index'])->name('requests.index');
+        Route::get('demandes/nouvelles', [SosJobController::class, 'count'])->name('requests.count');
+        Route::get('demandes/{sos}', [SosJobController::class, 'show'])->name('requests.show');
+        Route::post('demandes/{sos}/accepter', [SosJobController::class, 'accept'])->name('requests.accept');
+        Route::post('demandes/{sos}/refuser', [SosJobController::class, 'decline'])->name('requests.decline');
+        Route::post('demandes/{sos}/terminer', [SosJobController::class, 'complete'])->name('requests.complete');
+        Route::post('demandes/{sos}/abandonner', [SosJobController::class, 'release'])->name('requests.release');
+
+        Route::get('interventions', [SosJobController::class, 'history'])->name('jobs.index');
+    });
+
+
+        /* ---------- Espace administrateur ---------- */
+        Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', AdminDashboardController::class)->name('dashboard');
+
+        Route::get('utilisateurs', [UserController::class, 'index'])->name('users.index');
+        Route::post('utilisateurs/{user}/statut', [UserController::class, 'toggle'])->name('users.toggle');
+
+        Route::get('partenaires', [PartnerController::class, 'index'])->name('partners.index');
+        Route::post('partenaires/{user}/valider', [PartnerController::class, 'approve'])->name('partners.approve');
+        Route::post('partenaires/{user}/refuser', [PartnerController::class, 'reject'])->name('partners.reject');
+        Route::post('partenaires/{user}/commission', [PartnerController::class, 'commission'])->name('partners.commission');
+
+        Route::get('finances', [FinanceController::class, 'index'])->name('finances.index');
+
+        Route::get('parametres', [SettingController::class, 'edit'])->name('settings.edit');
+        Route::post('parametres', [SettingController::class, 'update'])->name('settings.update');
+    });
+
 });

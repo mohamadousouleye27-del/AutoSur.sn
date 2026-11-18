@@ -43,6 +43,7 @@ class AuthController extends Controller
             'email'    => $data['email'] ?? null,
             'role'     => $data['role'],
             'password' => Hash::make($data['password']),
+            'partner_status' => in_array($data['role'], \App\Models\User::PARTNER_ROLES, true) ? 'pending' : null,
         ])->save();
 
         $this->sendOtp($user);
@@ -135,6 +136,10 @@ class AuthController extends Controller
 
         if (! $user || ! Hash::check($request->input('password'), $user->password)) {
             return back()->withErrors(['login' => 'Identifiants incorrects.'])->onlyInput('login');
+        }
+
+        if (! $user->is_active) {
+            return back()->withErrors(['login' => 'Ce compte est suspendu. Contactez AutoSur.'])->onlyInput('login');
         }
 
         if (! $user->phone_verified_at) {
