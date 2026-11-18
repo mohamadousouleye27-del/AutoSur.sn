@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class SosRequest extends Model
 {
@@ -71,5 +72,23 @@ class SosRequest extends Model
             'cancelled' => ['label' => 'Annulée',                   'class' => 'bg-slate-100 text-slate-500'],
             default     => ['label' => "Recherche d'un dépanneur…", 'class' => 'bg-amber-100 text-amber-800'],
         };
+    }
+
+
+    /** Demandes encore ouvertes et non refusées par ce dépanneur. */
+    public function scopeOpenFor($query, int $driverId)
+    {
+        return $query->where('status', 'searching')
+            ->whereNull('driver_id')
+            ->whereNotIn('id', DB::table('sos_request_declines')
+                ->where('driver_id', $driverId)
+                ->select('sos_request_id'));
+    }
+
+    public function directionsUrl(): ?string
+    {
+        return $this->hasPosition()
+            ? "https://www.google.com/maps/dir/?api=1&destination={$this->latitude},{$this->longitude}"
+            : null;
     }
 }

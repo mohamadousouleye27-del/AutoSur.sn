@@ -17,4 +17,23 @@ return [
         ['label' => 'Mes offres',        'route' => 'assurance.offers.index',   'match' => 'assurance.offers.*',        'icon' => 'M20 12l-8 8-9-9V3h8zM7.5 7.5h.01'],
         ['label' => 'Souscriptions',     'route' => 'assurance.subscriptions.index', 'match' => 'assurance.subscriptions.*', 'icon' => 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],
     ],
+
+        'garage' => [
+        ['label' => 'Tableau de bord', 'route' => 'garage.dashboard',          'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+        ['label' => 'Rendez-vous',     'route' => 'garage.appointments.index', 'match' => 'garage.appointments.*', 'icon' => 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4'],
+    ],
+
+    'depanneur' => [
+        ['label' => 'Tableau de bord',  'route' => 'depanneur.dashboard',      'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+        ['label' => 'Demandes SOS',     'route' => 'depanneur.requests.index', 'match' => 'depanneur.requests.*', 'icon' => 'M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'],
+        ['label' => 'Mes interventions', 'route' => 'depanneur.jobs.index',    'match' => 'depanneur.jobs.*',     'icon' => 'M20 6L9 17l-5-5'],
+    ],
+
+    'admin' => [
+        ['label' => 'Tableau de bord', 'route' => 'admin.dashboard',        'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+        ['label' => 'Utilisateurs',    'route' => 'admin.users.index',      'match' => 'admin.users.*',    'icon' => 'M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M21 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8'],
+        ['label' => 'Partenaires',     'route' => 'admin.partners.index',   'match' => 'admin.partners.*', 'icon' => 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],
+        ['label' => 'Suivi comptable', 'route' => 'admin.finances.index',   'match' => 'admin.finances.*', 'icon' => 'M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
+        ['label' => 'Paramètres',      'route' => 'admin.settings.edit',    'match' => 'admin.settings.*', 'icon' => 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6'],
+    ],
 ];

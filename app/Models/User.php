@@ -18,6 +18,22 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+
+    public const PARTNER_ROLES = ['garage', 'depanneur', 'assurance'];
+
+    public const ROLE_LABELS = [
+        'client'    => 'Automobiliste',
+        'garage'    => 'Garage',
+        'depanneur' => 'Dépanneur',
+        'assurance' => 'Assurance',
+        'admin'     => 'Administrateur',
+    ];
+
+    public function isPartner(): bool
+    {
+        return in_array($this->role, self::PARTNER_ROLES, true);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -28,6 +44,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_available' => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 

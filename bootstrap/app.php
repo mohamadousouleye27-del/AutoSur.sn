@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         $middleware->alias(['role' => \App\Http\Middleware\RoleMiddleware::class]);
         $middleware->redirectUsersTo(fn () => route(auth()->user()->homeRoute()));
+
+        $middleware->alias([
+        'role'    => \App\Http\Middleware\RoleMiddleware::class,
+        'partner' => \App\Http\Middleware\EnsurePartnerApproved::class,
+    ]);
+    
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
