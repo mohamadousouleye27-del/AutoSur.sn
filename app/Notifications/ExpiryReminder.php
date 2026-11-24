@@ -18,7 +18,7 @@ class ExpiryReminder extends Notification
     {
         $channels = ['database'];
 
-        if (config('alerts.channels.mail') && $notifiable->email) {
+        if (Setting::bool('alerts_mail', (bool) config('alerts.channels.mail')) && $notifiable->email && $notifiable->email_verified_at) {
             $channels[] = 'mail';
         }
         if (config('alerts.channels.sms') && $notifiable->phone) {

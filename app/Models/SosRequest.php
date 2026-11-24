@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class SosRequest extends Model
 {
@@ -90,5 +91,10 @@ class SosRequest extends Model
         return $this->hasPosition()
             ? "https://www.google.com/maps/dir/?api=1&destination={$this->latitude},{$this->longitude}"
             : null;
+    }
+
+    public function rating(): MorphOne
+    {
+        return $this->morphOne(Rating::class, 'ratable');
     }
 }

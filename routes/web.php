@@ -22,6 +22,18 @@ use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Client\PaymentController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\TwoFactorController;
+use App\Http\Controllers\SecurityController;
+use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Client\RatingController;
+use App\Http\Controllers\PartnerReviewController;
+use App\Http\Controllers\Admin\DocumentModerationController;
+use App\Http\Controllers\Admin\ReviewModerationController;
+use App\Http\Controllers\Admin\VehicleModerationController;
+
+
 
 Route::view('/', 'home')->name('home');
 
@@ -35,13 +47,27 @@ Route::middleware('guest')->group(function () {
     Route::get('/verification', [AuthController::class, 'showOtp'])->name('otp.show');
     Route::post('/verification', [AuthController::class, 'verifyOtp'])->name('otp.verify');
     Route::post('/verification/renvoyer', [AuthController::class, 'resendOtp'])->name('otp.resend');
+
+        Route::get('/mot-de-passe-oublie', [PasswordResetController::class, 'showRequest'])->name('password.forgot');
+    Route::post('/mot-de-passe-oublie', [PasswordResetController::class, 'sendCode'])->middleware('throttle:5,5')->name('password.send');
+    Route::get('/mot-de-passe-oublie/code', [PasswordResetController::class, 'showReset'])->name('password.code');
+    Route::post('/mot-de-passe-oublie/code', [PasswordResetController::class, 'reset'])->middleware('throttle:10,5')->name('password.update');
+
+    Route::get('/connexion/verification', [TwoFactorController::class, 'show'])->name('twofa.show');
+    Route::post('/connexion/verification', [TwoFactorController::class, 'verify'])->middleware('throttle:10,5')->name('twofa.verify');
+    Route::post('/connexion/verification/renvoyer', [TwoFactorController::class, 'resend'])->middleware('throttle:5,5')->name('twofa.resend');
+
 });
 
 Route::post('/deconnexion', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::middleware('auth')->group(function () {
 
-
+        Route::middleware('role:client,garage,depanneur,assurance,admin')->group(function () {
+        Route::get('securite', [SecurityController::class, 'edit'])->name('security.edit');
+        Route::post('securite/mot-de-passe', [SecurityController::class, 'updatePassword'])->name('security.password');
+        Route::post('securite/2fa', [SecurityController::class, 'toggleTwoFactor'])->name('security.twofa');
+    });
 
     /* ---------- Espace client ---------- */
     Route::middleware('role:client')->prefix('client')->name('client.')->group(function () {
@@ -86,6 +112,18 @@ Route::middleware('auth')->group(function () {
         Route::get('sos/{sos}', [SosController::class, 'show'])->name('sos.show');
         Route::get('sos/{sos}/statut', [SosController::class, 'status'])->name('sos.status');
         Route::delete('sos/{sos}', [SosController::class, 'destroy'])->name('sos.destroy');
+
+
+                // Paiements
+        Route::post('visite-technique/{inspection}/payer', [PaymentController::class, 'payInspection'])->name('inspections.pay');
+        Route::get('paiements/{payment}/retour', [PaymentController::class, 'callback'])->name('payments.callback');
+        Route::get('paiements/{payment}/simulation', [PaymentController::class, 'simulation'])->name('payments.simulation');
+        Route::post('paiements/{payment}/simulation', [PaymentController::class, 'simulate'])->name('payments.simulate');
+
+
+                // Avis
+        Route::post('avis/visite-technique/{inspection}', [RatingController::class, 'inspection'])->name('ratings.inspection');
+        Route::post('avis/sos/{sos}', [RatingController::class, 'sos'])->name('ratings.sos');
     });
 
     /* ---------- Espace assurance ---------- */
@@ -111,6 +149,8 @@ Route::middleware('auth')->group(function () {
         Route::post('rendez-vous/{appointment}/confirmer', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
         Route::post('rendez-vous/{appointment}/terminer', [AppointmentController::class, 'complete'])->name('appointments.complete');
         Route::post('rendez-vous/{appointment}/liberer', [AppointmentController::class, 'release'])->name('appointments.release');
+
+        Route::get('avis', [PartnerReviewController::class, 'index'])->name('reviews.index');
     });
 
     /* ---------- Espace dépanneur ---------- */
@@ -127,6 +167,8 @@ Route::middleware('auth')->group(function () {
         Route::post('demandes/{sos}/abandonner', [SosJobController::class, 'release'])->name('requests.release');
 
         Route::get('interventions', [SosJobController::class, 'history'])->name('jobs.index');
+
+        Route::get('avis', [PartnerReviewController::class, 'index'])->name('reviews.index');
     });
 
 
@@ -146,6 +188,32 @@ Route::middleware('auth')->group(function () {
 
         Route::get('parametres', [SettingController::class, 'edit'])->name('settings.edit');
         Route::post('parametres', [SettingController::class, 'update'])->name('settings.update');
+
+        Route::post('utilisateurs/{user}/2fa', [UserController::class, 'resetTwoFactor'])->name('users.twofa');
+
+
+        Route::get('vehicules', [VehicleModerationController::class, 'index'])->name('vehicles.index');
+        Route::delete('vehicules/{vehicle}', [VehicleModerationController::class, 'destroy'])->name('vehicles.destroy');
+
+        Route::get('documents', [DocumentModerationController::class, 'index'])->name('documents.index');
+        Route::delete('documents/{document}', [DocumentModerationController::class, 'destroy'])->name('documents.destroy');
+
+        Route::get('avis', [ReviewModerationController::class, 'index'])->name('reviews.index');
+        Route::delete('avis/{rating}', [ReviewModerationController::class, 'destroy'])->name('reviews.destroy');
     });
 
 });
+
+Route::post('webhooks/paiement', [PaymentController::class, 'webhook'])
+    ->middleware('throttle:60,1')
+    ->name('webhooks.payment');
+
+
+Route::get('/email/confirmation/{user}/{hash}', [EmailVerificationController::class, 'verify'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('email.verify');
+
+// Aperçu de l'e-mail dans le navigateur (développement uniquement)
+if (app()->environment('local')) {
+    Route::get('/apercu-email', fn () => new \App\Mail\WelcomeMail(\App\Models\User::first(), url('/')));
+}    

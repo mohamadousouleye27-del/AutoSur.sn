@@ -14,6 +14,24 @@
 </div>
 
 <div class="mt-8 grid gap-5 sm:grid-cols-3">
+    <h2 class="mt-10 text-xl font-extrabold">Paiements reçus (réels)</h2>
+<div class="card mt-4 !bg-brand-200/60">
+  <p class="text-sm font-semibold text-brand-900/70">Total encaissé</p>
+  <p class="mt-1 text-2xl font-extrabold text-brand-700">{{ number_format($totalPaid, 0, ',', ' ') }} FCFA</p>
+</div>
+<div class="mt-4 space-y-3">
+  @forelse ($payments as $p)
+    <div class="card flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p class="font-bold">{{ $p->user->name }}</p>
+        <p class="text-sm text-brand-900/60">{{ $p->paid_at?->format('d/m/Y H:i') }} · {{ strtoupper($p->provider) }}</p>
+      </div>
+      <p class="font-extrabold text-brand-700">{{ $p->formattedAmount() }}</p>
+    </div>
+  @empty
+    <p class="text-sm text-brand-900/60">Aucun paiement sur cette période.</p>
+  @endforelse
+</div>
   <div class="card"><p class="text-sm font-semibold text-brand-900/60">Commissions d'assurance</p>
     <p class="mt-2 text-2xl font-extrabold text-brand-700">{{ number_format($totalCommission, 0, ',', ' ') }} FCFA</p></div>
   <div class="card"><p class="text-sm font-semibold text-brand-900/60">Frais visites techniques</p>

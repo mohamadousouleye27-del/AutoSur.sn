@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'dexnotify' => [
+        'api_key' => env('DEXNOTIFY_API_KEY'),
+        'base_url' => env('DEXNOTIFY_API_URL'),
+        'sender' => env('DEXNOTIFY_SENDER', 'DEXCHANGE'),
+    ],
+
 ];

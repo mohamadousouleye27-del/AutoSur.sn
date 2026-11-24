@@ -51,6 +51,14 @@
                   {{ $u->is_active ? 'Suspendre' : 'Réactiver' }}
                 </button>
               </form>
+
+            @if ($u->two_factor_enabled)
+                <form method="POST" action="{{ route('admin.users.twofa', $u) }}" class="mt-1" onsubmit="return confirm('Désactiver la double authentification de ce compte ?')">
+                  @csrf
+                  <button class="text-xs font-semibold text-brand-700 underline">Désactiver la 2FA</button>
+                </form>
+              @endif
+
             @endif
           </td>
         </tr>

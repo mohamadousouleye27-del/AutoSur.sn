@@ -3,6 +3,8 @@
 
 @section('content')
 
+@php $img = fn (string $id, int $w = 800, int $h = 500, string $crop = 'fill') => app(\App\Services\ImageStorage::class)->url($id, $w, $h, $crop); @endphp
+
 {{-- HERO --}}
 <section class="mx-auto max-w-6xl px-6 pt-10">
   <div class="grid items-center gap-10 md:grid-cols-2">
@@ -19,10 +21,10 @@
     </div>
 
     <div class="relative h-72 rounded-[2rem] bg-brand-400 md:h-[22rem]">
-      <x-photo src="hero-car.png" alt="Voiture"
-         class="absolute bottom-6 right-4 h-[88%] w-auto max-w-none -translate-x-[12%] object-contain drop-shadow-xl md:right-6 md:-translate-x-[30%]" />
-    </div>
-  </div>
+       </div>
+             <x-photo :src="$img('autosur/site/hero-car', 1200, 800, 'limit')" alt="Voiture"
+               class="absolute bottom-6 right-4 h-[88%] w-auto max-w-none -translate-x-[12%] object-contain drop-shadow-xl md:right-6 md:-translate-x-[18%]" />
+       </div>
 </section>
 
 {{-- RECHERCHE --}}
@@ -56,12 +58,12 @@
 
   @php
     $services = [
-      ['vehicules.jpg',  'Mes véhicules',         'Une fiche par véhicule : immatriculation, châssis, assurance, historique.'],
-      ['coffre-fort.jpg','Coffre-fort numérique', 'Carte grise, attestation, factures : tout est rangé et accessible.'],
-      ['alertes.jpg',    'Alertes intelligentes', 'Notifications push, SMS et e-mail avant chaque échéance.'],
-      ['assurance.jpg',  'Assurance auto',        'Demandez un devis et comparez les offres de nos partenaires.'],
-      ['visite.jpg',     'Visite technique',      'Prenez rendez-vous et suivez le statut de votre contrôle.'],
-      ['sos.jpg',        'SOS Panne',             'Un dépanneur proche de vous, localisé en temps réel.'],
+      [$img('autosur/vehicules'),   'Mes véhicules',         'Une fiche par véhicule : immatriculation, châssis, assurance, historique.'],
+      [$img('autosur/coffre-fort'), 'Coffre-fort numérique', 'Carte grise, attestation, factures : tout est rangé et accessible.'],
+      [$img('autosur/alertes'),     'Alertes intelligentes', 'Notifications push, SMS et e-mail avant chaque échéance.'],
+      [$img('autosur/assurance'),   'Assurance auto',        'Demandez un devis et comparez les offres de nos partenaires.'],
+      [$img('autosur/visite'),      'Visite technique',      'Prenez rendez-vous et suivez le statut de votre contrôle.'],
+      [$img('autosur/sos'),         'SOS Panne',             'Un dépanneur proche de vous, localisé en temps réel.'],
     ];
   @endphp
 

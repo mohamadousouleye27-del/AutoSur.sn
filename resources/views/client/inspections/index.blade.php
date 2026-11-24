@@ -11,9 +11,13 @@
 </div>
 
 <div class="mt-6 rounded-2xl bg-brand-400/15 p-4 text-sm text-brand-900/80">
-  Frais de service de facilitation : <strong>1 500 à 3 000 FCFA</strong> selon le type de véhicule.
-  Le paiement en ligne (Wave / Orange Money) sera disponible prochainement.
+  Frais de service de facilitation : <strong>1 500 à 3 000 FCFA</strong> selon le type de véhicule,
+  payables en ligne avec Wave ou Orange Money.
 </div>
+
+@if ($errors->any())
+  <p class="mt-4 rounded-2xl bg-red-100 px-5 py-3 text-sm font-semibold text-red-700">{{ $errors->first() }}</p>
+@endif
 
 @if ($appointments->isEmpty())
   <div class="card mt-8 py-16 text-center">
@@ -33,16 +37,39 @@
           <p class="text-sm text-brand-900/70">{{ $a->scheduled_date->locale('fr')->translatedFormat('l d F Y') }} · {{ $a->slotLabel() }}</p>
           <p class="text-sm text-brand-900/60">{{ $a->city }} · {{ $a->categoryLabel() }}</p>
           <p class="mt-1 text-sm font-bold text-brand-700">Frais de service : {{ $a->formattedFee() }}</p>
+           @if ($a->garage)<p class="text-sm text-brand-900/60">Garage : {{ $a->garage->name }}</p>@endif
         </div>
+
         <div class="flex flex-wrap items-center gap-3">
+          @if ($a->isPaid())
+            <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">Payé</span>
+          @elseif ($a->canCancel())
+            <form method="POST" action="{{ route('client.inspections.pay', $a) }}">
+              @csrf
+              <button class="btn-primary !py-2 text-sm">Payer {{ $a->formattedFee() }}</button>
+            </form>
+          @endif
+
           <span class="rounded-full px-3 py-1 text-xs font-bold {{ $b['class'] }}">{{ $b['label'] }}</span>
-          @if ($a->canCancel())
+
+          @if ($a->canCancel() && ! $a->isPaid())
             <form method="POST" action="{{ route('client.inspections.destroy', $a) }}" onsubmit="return confirm('Annuler ce rendez-vous ?')">
               @csrf @method('DELETE')
               <button class="rounded-full border border-red-200 px-5 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50">Annuler</button>
             </form>
           @endif
         </div>
+
+                @if ($a->status === 'completed' && $a->garage_id)
+          <div class="w-full border-t border-brand-700/10 pt-4">
+            @if ($a->rating)
+              <p class="text-sm text-brand-900/70">Votre avis : <span class="font-bold text-amber-500">{{ $a->rating->stars() }}</span>@if ($a->rating->comment) · « {{ $a->rating->comment }} »@endif</p>
+            @else
+              @include('client.partials.rating-form', ['action' => route('client.ratings.inspection', $a), 'label' => 'Noter ce garage'])
+            @endif
+          </div>
+        @endif
+        
       </article>
     @endforeach
   </div>

@@ -64,7 +64,7 @@ class SosController extends Controller
     {
         $this->authorizeOwner($sos);
 
-        return view('client.sos.show', ['sos' => $sos->load('vehicle', 'driver')]);
+        return view('client.sos.show', ['sos' => $sos->load('vehicle', 'driver', 'rating')]);
     }
 
     /** Utilisé par la page de suivi (actualisation automatique). */

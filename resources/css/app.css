@@ -5,7 +5,7 @@
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-50:  #FFFFFF;   /* blanc pur */   /* fond de base */
+  --color-brand-50:  #FFFDF5;   /* fond de base */
   --color-brand-200: #E7F1A8;   /* vert clair : boutons d'action, badges */
   --color-brand-400: #95B1EE;   /* bleu clair : blocs, accents */
   --color-brand-700: #364C84;   /* bleu foncé : textes, navbar, boutons principaux */

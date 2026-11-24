@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
+use App\Services\ImageStorage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
@@ -11,6 +12,8 @@ use Illuminate\Validation\Rule;
 
 class VehicleController extends Controller
 {
+    public function __construct(private ImageStorage $images) {}
+
     public function index(Request $request)
     {
         return view('client.vehicles.index', [
@@ -27,8 +30,18 @@ class VehicleController extends Controller
     {
         $data = $this->validated($request);
 
+        try {
+            $publicId = $request->hasFile('photo') ? $this->images->upload($request->file('photo'), 'vehicles') : null;
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withInput()->withErrors(['photo' => "L'envoi de la photo a échoué. Réessayez dans un instant."]);
+        }
+
         $vehicle = $request->user()->vehicles()->create(Arr::except($data, ['photo', 'remove_photo']));
-        $this->savePhoto($request, $vehicle);
+
+        if ($publicId) {
+            $vehicle->forceFill(['photo_public_id' => $publicId])->save();
+        }
 
         return redirect()->route('client.vehicles.index')->with('success', 'Véhicule ajouté.');
     }
@@ -46,8 +59,22 @@ class VehicleController extends Controller
 
         $data = $this->validated($request, $vehicle);
 
+        try {
+            $newId = $request->hasFile('photo') ? $this->images->upload($request->file('photo'), 'vehicles') : null;
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withInput()->withErrors(['photo' => "L'envoi de la photo a échoué. Réessayez dans un instant."]);
+        }
+
         $vehicle->update(Arr::except($data, ['photo', 'remove_photo']));
-        $this->savePhoto($request, $vehicle);
+
+        if ($newId) {
+            $this->deletePhoto($vehicle);
+            $vehicle->forceFill(['photo_public_id' => $newId, 'photo_path' => null])->save();
+        } elseif ($request->boolean('remove_photo')) {
+            $this->deletePhoto($vehicle);
+            $vehicle->forceFill(['photo_public_id' => null, 'photo_path' => null])->save();
+        }
 
         return redirect()->route('client.vehicles.index')->with('success', 'Véhicule mis à jour.');
     }
@@ -56,9 +83,7 @@ class VehicleController extends Controller
     {
         $this->authorizeOwner($vehicle);
 
-        if ($vehicle->photo_path) {
-            Storage::disk('public')->delete($vehicle->photo_path);
-        }
+        $this->deletePhoto($vehicle);
         $vehicle->delete();
 
         return redirect()->route('client.vehicles.index')->with('success', 'Véhicule supprimé.');
@@ -69,23 +94,14 @@ class VehicleController extends Controller
         abort_unless($vehicle->user_id === auth()->id(), 403);
     }
 
-    /** Suppression et/ou remplacement de la photo. */
-    private function savePhoto(Request $request, Vehicle $vehicle): void
+    /** Supprime la photo actuelle, qu'elle soit sur Cloudinary ou (ancienne) en local. */
+    private function deletePhoto(Vehicle $vehicle): void
     {
-        if ($request->boolean('remove_photo') && $vehicle->photo_path) {
+        if ($vehicle->photo_public_id) {
+            $this->images->delete($vehicle->photo_public_id);
+        }
+        if ($vehicle->photo_path) {
             Storage::disk('public')->delete($vehicle->photo_path);
-            $vehicle->photo_path = null;
-        }
-
-        if ($request->hasFile('photo')) {
-            if ($vehicle->photo_path) {
-                Storage::disk('public')->delete($vehicle->photo_path);
-            }
-            $vehicle->photo_path = $request->file('photo')->store('vehicles', 'public');
-        }
-
-        if ($vehicle->isDirty('photo_path')) {
-            $vehicle->save();
         }
     }
 
@@ -114,7 +130,7 @@ class VehicleController extends Controller
             'photo.image'    => 'Le fichier doit être une image.',
             'photo.mimes'    => 'Formats acceptés : JPG, PNG ou WebP.',
             'photo.max'      => 'La photo ne doit pas dépasser 2 Mo.',
-            'photo.uploaded' => 'Échec de l\'envoi : la photo est trop lourde (2 Mo maximum).',
+            'photo.uploaded' => "Échec de l'envoi : la photo est trop lourde (2 Mo maximum).",
         ]);
     }
 }

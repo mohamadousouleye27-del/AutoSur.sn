@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\InspectionAppointment;
 use App\Models\InsuranceOffer;
 use Illuminate\Http\Request;
+use App\Models\Payment;
 
 class FinanceController extends Controller
 {
@@ -26,12 +27,17 @@ class FinanceController extends Controller
         $visits = InspectionAppointment::with('vehicle', 'garage')
             ->where('status', 'completed')->tap($inMonth)->latest('updated_at')->get();
 
+        $payments = Payment::with('user')
+            ->where('status', 'paid')->tap($inMonth)->latest('updated_at')->get();    
+
         return view('admin.finances.index', [
             'month'           => $month,
             'offers'          => $offers,
             'visits'          => $visits,
             'totalCommission' => $offers->sum(fn ($o) => $o->commissionAmount()),
             'totalFees'       => $visits->sum('fee'),
+            'payments'  => $payments,
+            'totalPaid' => $payments->sum('amount'),
         ]);
     }
 }

@@ -6,6 +6,9 @@
   <div class="card !p-8">
     <h1 class="text-3xl font-extrabold text-brand-700">Connexion</h1>
     <p class="mt-1 text-brand-900/70">Heureux de vous revoir 👋</p>
+        @if (session('status'))
+      <p class="mt-4 rounded-2xl bg-brand-200 px-4 py-2 text-sm font-medium text-brand-700">{{ session('status') }}</p>
+    @endif
 
     <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
       @csrf
@@ -20,6 +23,9 @@
       <label class="flex items-center gap-2 text-sm">
         <input type="checkbox" name="remember" class="rounded border-brand-700/30"> Se souvenir de moi
       </label>
+        <div class="text-right">
+        <a href="{{ route('password.forgot') }}" class="text-sm font-semibold text-brand-700 underline">Mot de passe oublié ?</a>
+      </div>
       <button class="btn-primary w-full">Se connecter</button>
     </form>
 
