@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules\Password;
+use App\Services\OtpService;
+use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
 {
@@ -48,6 +52,23 @@ class AuthController extends Controller
 
         $this->sendOtp($user);
         $request->session()->put('otp_user_id', $user->id);
+
+                // E-mail de bienvenue (si une adresse a été donnée), envoyé après la réponse :
+        // un échec d'envoi ne bloque jamais l'inscription.
+        if ($user->email) {
+            $verifyUrl = URL::temporarySignedRoute('email.verify', now()->addDays(3), [
+                'user' => $user->id,
+                'hash' => sha1($user->email),
+            ]);
+
+            defer(function () use ($user, $verifyUrl) {
+                try {
+                    Mail::to($user->email)->send(new WelcomeMail($user, $verifyUrl));
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            });
+        }
 
         return redirect()->route('otp.show');
     }
@@ -122,7 +143,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+        public function login(Request $request)
     {
         $request->validate([
             'login'    => ['required', 'string'],
@@ -146,6 +167,15 @@ class AuthController extends Controller
             $this->sendOtp($user);
             $request->session()->put('otp_user_id', $user->id);
             return redirect()->route('otp.show');
+        }
+
+        // Double authentification : on ne connecte l'utilisateur qu'après le code SMS.
+        if ($user->two_factor_enabled) {
+            app(OtpService::class)->issue($user, 'login');
+            $request->session()->put('twofa_user_id', $user->id);
+            $request->session()->put('twofa_remember', $request->boolean('remember'));
+
+            return redirect()->route('twofa.show');
         }
 
         Auth::login($user, $request->boolean('remember'));

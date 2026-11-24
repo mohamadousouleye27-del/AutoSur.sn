@@ -27,6 +27,9 @@
             <p class="text-lg font-extrabold text-brand-900">{{ $p->name }}</p>
             <p class="text-sm text-brand-900/70">{{ \App\Models\User::ROLE_LABELS[$p->role] }} · {{ $p->phone }}@if ($p->email) · {{ $p->email }}@endif</p>
             <p class="text-xs text-brand-900/40">Inscrit le {{ $p->created_at->format('d/m/Y') }}</p>
+            @if (in_array($p->role, ['garage', 'depanneur']))
+              <p class="text-xs font-semibold text-amber-600">{{ ($avg = $p->averageRating()) ? 'Note : ' . number_format($avg, 1, ',', '') . ' / 5' : 'Pas encore noté' }}</p>
+            @endif
           </div>
           <span class="rounded-full px-3 py-1 text-xs font-bold {{ $badge[1] }}">{{ $badge[0] }}</span>
         </div>

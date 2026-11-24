@@ -18,6 +18,10 @@
     <p class="text-sm font-semibold text-brand-900/60">Visites effectuées</p>
     <p class="mt-2 text-4xl font-extrabold text-brand-700">{{ $doneCount }}</p>
   </a>
+    <div class="card">
+    <p class="text-sm font-semibold text-brand-900/60">Note moyenne</p>
+    <p class="mt-2 text-4xl font-extrabold text-brand-700">{{ ($avg = auth()->user()->averageRating()) ? number_format($avg, 1, ',', '') . ' / 5' : '—' }}</p>
+  </div>
 </div>
 
 <section class="card mt-8">

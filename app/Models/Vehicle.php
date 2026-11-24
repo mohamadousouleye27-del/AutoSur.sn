@@ -41,8 +41,13 @@ class Vehicle extends Model
         return ['label' => 'Valide', 'class' => 'bg-brand-200 text-brand-700'];
     }
 
-    public function photoUrl(): ?string
+    public function photoUrl(int $width = 800, int $height = 500): ?string
     {
+        if ($this->photo_public_id) {
+            return app(\App\Services\ImageStorage::class)->url($this->photo_public_id, $width, $height);
+        }
+
+        // Ancienne photo stockée en local (avant Cloudinary)
         return $this->photo_path ? asset('storage/' . $this->photo_path) : null;
     }
 

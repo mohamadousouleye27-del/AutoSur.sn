@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Suivi SOS')
 
+@if ($errors->any())
+  <p class="mt-4 rounded-2xl bg-red-100 px-5 py-3 text-sm font-semibold text-red-700">{{ $errors->first() }}</p>
+@endif
+
 @section('content')
 @php $b = $sos->badge(); @endphp
 
@@ -36,6 +40,20 @@
     <p id="searching-note" class="mt-5 text-sm text-brand-900/60 {{ $sos->status === 'searching' ? '' : 'hidden' }}">
       Nous contactons les dépanneurs proches de vous. Cette page se met à jour automatiquement.
     </p>
+
+
+    @if ($sos->status === 'completed' && $sos->driver_id)
+  <section class="card mt-6 max-w-xl">
+    <h2 class="text-lg font-extrabold">Votre avis sur le dépanneur</h2>
+    @if ($sos->rating)
+        <p class="mt-2 text-sm text-brand-900/70"><span class="font-bold text-amber-500">{{ $sos->rating->stars() }}</span>@if ($sos->rating->comment) · « {{ $sos->rating->comment }} »@endif</p>
+        @else
+        <div class="mt-3">
+            @include('client.partials.rating-form', ['action' => route('client.ratings.sos', $sos), 'label' => 'Noter ce dépanneur'])
+        </div>
+        @endif
+    </section>
+    @endif
 
     @if ($sos->isActive())
       <form method="POST" action="{{ route('client.sos.destroy', $sos) }}" class="mt-5" onsubmit="return confirm('Annuler la demande SOS ?')">

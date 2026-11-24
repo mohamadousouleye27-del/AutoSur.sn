@@ -14,7 +14,8 @@ class InspectionController extends Controller
     {
         return view('client.inspections.index', [
             'appointments' => $request->user()->inspectionAppointments()
-                ->with('vehicle')->orderByDesc('scheduled_date')->get(),
+                ->with('vehicle', 'payments', 'garage', 'rating')->orderByDesc('scheduled_date')->get(),
+                
         ]);
     }
 

@@ -42,4 +42,11 @@ class UserController extends Controller
 
         return back()->with('success', $user->is_active ? 'Compte réactivé.' : 'Compte suspendu.');
     }
+
+        public function resetTwoFactor(User $user)
+    {
+        $user->forceFill(['two_factor_enabled' => false])->save();
+
+        return back()->with('success', 'Double authentification désactivée pour ce compte.');
+    }
 }

@@ -43,9 +43,12 @@
       @endforeach
     </nav>
 
-    <div class="mt-6 rounded-2xl bg-brand-400/15 p-4">
+        <div class="mt-6 rounded-2xl bg-brand-400/15 p-4">
       <p class="truncate text-sm font-bold text-brand-900">{{ $user->name }}</p>
       <p class="truncate text-xs text-brand-900/60">{{ $user->phone }}</p>
+
+      <a href="{{ route('security.edit') }}" class="mt-3 block text-center text-xs font-semibold text-brand-700 underline">Sécurité du compte</a>
+
       <form method="POST" action="{{ route('logout') }}" class="mt-3">
         @csrf
         <button class="btn-primary w-full !py-2 text-sm">Déconnexion</button>
@@ -56,12 +59,12 @@
   <div class="min-w-0 flex-1">
     {{-- Barre mobile --}}
     <header class="border-b border-brand-700/10 bg-white md:hidden">
-      <div class="flex items-center justify-between px-4 py-3">
-        <x-logo />
-        <form method="POST" action="{{ route('logout') }}">@csrf
-          <button class="text-sm font-semibold text-brand-700">Quitter</button>
-        </form>
-      </div>
+        <div class="flex items-center gap-4">
+          <a href="{{ route('security.edit') }}" class="text-sm font-semibold text-brand-700">Sécurité</a>
+          <form method="POST" action="{{ route('logout') }}">@csrf
+            <button class="text-sm font-semibold text-brand-700">Quitter</button>
+          </form>
+        </div>
       <nav class="flex gap-2 overflow-x-auto px-4 pb-3">
         @foreach ($menu as $item)
           @if ($item['route'])

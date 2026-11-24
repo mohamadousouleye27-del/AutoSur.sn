@@ -43,7 +43,7 @@
         <p class="mt-1 text-xs text-brand-900/50">JPG, PNG ou WebP · 2 Mo maximum</p>
         @error('photo') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
 
-        @if ($vehicle->photo_path)
+        @if ($vehicle->photo_path || $vehicle->photo_public_id)
           <label class="mt-3 flex items-center gap-2 text-sm text-red-600">
             <input type="checkbox" name="remove_photo" value="1" class="rounded border-brand-700/30"> Supprimer la photo actuelle
           </label>

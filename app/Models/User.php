@@ -46,6 +46,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_available' => 'boolean',
             'is_active' => 'boolean',
+            'two_factor_enabled' => 'boolean',
         ];
     }
 
@@ -88,5 +89,22 @@ class User extends Authenticatable
     public function sosRequests(): HasMany
     {
         return $this->hasMany(SosRequest::class);
+    }
+
+    public function firstName(): string
+    {
+        return \Illuminate\Support\Str::before($this->name, ' ');
+    }
+
+    public function ratingsReceived(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'partner_id');
+    }
+
+    public function averageRating(): ?float
+    {
+        $average = $this->ratingsReceived()->avg('score');
+
+        return $average ? round($average, 1) : null;
     }
 }

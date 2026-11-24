@@ -21,12 +21,14 @@ return [
         'garage' => [
         ['label' => 'Tableau de bord', 'route' => 'garage.dashboard',          'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
         ['label' => 'Rendez-vous',     'route' => 'garage.appointments.index', 'match' => 'garage.appointments.*', 'icon' => 'M3 5h18v16H3zM3 10h18M8 3v4M16 3v4'],
+        ['label' => 'Avis', 'route' => 'garage.reviews.index', 'match' => 'garage.reviews.*', 'icon' => 'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z'],
     ],
 
     'depanneur' => [
         ['label' => 'Tableau de bord',  'route' => 'depanneur.dashboard',      'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
         ['label' => 'Demandes SOS',     'route' => 'depanneur.requests.index', 'match' => 'depanneur.requests.*', 'icon' => 'M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'],
         ['label' => 'Mes interventions', 'route' => 'depanneur.jobs.index',    'match' => 'depanneur.jobs.*',     'icon' => 'M20 6L9 17l-5-5'],
+        ['label' => 'Avis', 'route' => 'depanneur.reviews.index', 'match' => 'depanneur.reviews.*', 'icon' => 'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z'],
     ],
 
     'admin' => [
@@ -35,5 +37,8 @@ return [
         ['label' => 'Partenaires',     'route' => 'admin.partners.index',   'match' => 'admin.partners.*', 'icon' => 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],
         ['label' => 'Suivi comptable', 'route' => 'admin.finances.index',   'match' => 'admin.finances.*', 'icon' => 'M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
         ['label' => 'Paramètres',      'route' => 'admin.settings.edit',    'match' => 'admin.settings.*', 'icon' => 'M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6'],
+                ['label' => 'Véhicules', 'route' => 'admin.vehicles.index',  'match' => 'admin.vehicles.*',  'icon' => 'M5 16l1.5-5a2 2 0 0 1 1.9-1.4h7.2a2 2 0 0 1 1.9 1.4L19 16M5 16h14M5 16v3h3v-3M16 16v3h3v-3'],
+        ['label' => 'Documents', 'route' => 'admin.documents.index', 'match' => 'admin.documents.*', 'icon' => 'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'],
+        ['label' => 'Avis',      'route' => 'admin.reviews.index',   'match' => 'admin.reviews.*',   'icon' => 'M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z'],
     ],
 ];

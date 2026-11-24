@@ -40,6 +40,7 @@
               <p class="text-xs text-brand-900/50">Coordonnées après confirmation</p>
             @endif
             <p class="mt-1 text-xs text-brand-900/50">Frais de service : {{ $a->formattedFee() }}</p>
+            <p class="text-xs font-semibold {{ $a->isPaid() ? 'text-green-600' : 'text-brand-900/50' }}">{{ $a->isPaid() ? 'Frais payés' : 'Frais non payés' }}</p>
           </div>
         </div>
 

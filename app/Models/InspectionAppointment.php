@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class InspectionAppointment extends Model
 {
@@ -67,5 +69,20 @@ class InspectionAppointment extends Model
             'cancelled' => ['label' => 'Annulé',     'class' => 'bg-slate-100 text-slate-500'],
             default     => ['label' => 'En attente', 'class' => 'bg-amber-100 text-amber-800'],
         };
+    }
+
+    public function payments(): MorphMany
+    {
+        return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->payments->contains('status', 'paid');
+    }
+
+    public function rating(): MorphOne
+    {
+        return $this->morphOne(Rating::class, 'ratable');
     }
 }
