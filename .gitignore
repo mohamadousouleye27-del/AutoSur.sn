@@ -25,3 +25,7 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Fichiers locaux et configurations sensibles
+/.mcp.json
+/.claude/
+/boost.json
