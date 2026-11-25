@@ -1,4 +1,3 @@
-
 # ==========================================
 # ETAPE 1 : Compilation des assets frontend
 # ==========================================
@@ -7,15 +6,9 @@ FROM node:22-alpine AS frontend
 WORKDIR /app
 
 COPY package*.json ./
-
-RUN if [ -f package-lock.json ]; then \
-        npm ci; \
-    else \
-        npm install; \
-    fi
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 COPY . .
-
 RUN npm run build
 
 
@@ -38,8 +31,7 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Extensions PHP nécessaires
-# mbstring, curl et OPcache sont déjà fournis (OPcache est intégré à PHP depuis la 8.5)
+# Extensions PHP (mbstring, curl et OPcache sont déjà fournis)
 RUN docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
@@ -56,25 +48,25 @@ RUN docker-php-ext-configure gd \
 # Modules Apache
 RUN a2enmod rewrite headers
 
-# Installer Composer
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copier le projet
+# Projet
 COPY . .
 
-# Copier les assets compilés par Vite
+# Assets compilés par Vite
 COPY --from=frontend /app/public/build ./public/build
 
-# Installer uniquement les dépendances de production
+# Dépendances PHP de production
 RUN composer install \
     --no-dev \
     --no-interaction \
     --prefer-dist \
     --optimize-autoloader
 
-# Préparer les dossiers Laravel
+# Dossiers Laravel
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
@@ -85,16 +77,20 @@ RUN mkdir -p \
     && chmod -R 775 storage bootstrap/cache
 
 # Configuration Apache
-COPY docker/ports.conf /etc/apache2/ports.conf
-COPY docker/apache-vhost.conf /etc/apache2/sites-available/000-default.conf
+# Configuration Apache générée ici (évite les problèmes d'encodage des fichiers Windows)
+ENV PORT=10000
+RUN printf 'ServerName localhost\n' > /etc/apache2/conf-available/servername.conf \
+    && a2enconf servername \
+    && printf 'Listen ${PORT}\n' > /etc/apache2/ports.conf \
+    && printf '<VirtualHost *:${PORT}>\n    DocumentRoot /var/www/html/public\n    <Directory /var/www/html/public>\n        AllowOverride All\n        Require all granted\n        Options -Indexes +FollowSymLinks\n    </Directory>\n    ErrorLog /proc/self/fd/2\n    CustomLog /proc/self/fd/1 combined\n</VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
+    
 
-# Script de démarrage
+# Script de démarrage : fins de ligne Windows supprimées, lancé via sh
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh \
+    && chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
+ENTRYPOINT ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
 CMD ["apache2-foreground"]

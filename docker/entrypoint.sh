@@ -1,22 +1,17 @@
-
 #!/bin/sh
-
 set -e
 
-# Port fourni par Render
-PORT="${PORT:-10000}"
+cd /var/www/html
 
-# Adapter Apache au port de Render
-sed -i "s/10000/${PORT}/g" \
-    /etc/apache2/ports.conf \
-    /etc/apache2/sites-available/000-default.conf
-
-# Créer le lien symbolique du stockage public
+# Lien public vers le stockage (photos locales éventuelles)
 php artisan storage:link --force || true
 
-# Préparer les configurations Laravel
+# Migrations de la base (Aiven)
+php artisan migrate --force
+
+# Optimisations de production
 php artisan config:cache
+php artisan view:cache
 
-echo "AutoSur.sn est prêt à démarrer sur le port ${PORT}"
-
-exec "$@"
+# Apache écoute sur le port fourni par Render ($PORT)
+exec apache2-foreground
