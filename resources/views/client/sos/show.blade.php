@@ -45,6 +45,7 @@
     @if ($sos->status === 'completed' && $sos->driver_id)
   <section class="card mt-6 max-w-xl">
     <h2 class="text-lg font-extrabold">Votre avis sur le dépanneur</h2>
+    
     @if ($sos->rating)
         <p class="mt-2 text-sm text-brand-900/70"><span class="font-bold text-amber-500">{{ $sos->rating->stars() }}</span>@if ($sos->rating->comment) · « {{ $sos->rating->comment }} »@endif</p>
         @else

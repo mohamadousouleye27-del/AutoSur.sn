@@ -20,11 +20,10 @@
       </span>
     </div>
 
-    <div class="relative h-72 rounded-[2rem] bg-brand-400 md:h-[22rem]">
-       </div>
-             <x-photo :src="$img('autosur/site/hero-car', 1200, 800, 'limit')" alt="Voiture"
-               class="absolute bottom-6 right-4 h-[88%] w-auto max-w-none -translate-x-[12%] object-contain drop-shadow-xl md:right-6 md:-translate-x-[18%]" />
-       </div>
+    <div class="relative flex h-72 items-center justify-center overflow-hidden rounded-[2rem] bg-brand-400 md:h-[22rem]">
+      <img src="{{ asset('images/hero-car.png') }}" alt="Voiture bleue"
+        class="h-full w-full object-contain p-3 drop-shadow-xl md:p-5">
+    </div>
 </section>
 
 {{-- RECHERCHE --}}
@@ -58,20 +57,62 @@
 
   @php
     $services = [
-      [$img('autosur/vehicules'),   'Mes véhicules',         'Une fiche par véhicule : immatriculation, châssis, assurance, historique.'],
-      [$img('autosur/coffre-fort'), 'Coffre-fort numérique', 'Carte grise, attestation, factures : tout est rangé et accessible.'],
-      [$img('autosur/alertes'),     'Alertes intelligentes', 'Notifications push, SMS et e-mail avant chaque échéance.'],
-      [$img('autosur/assurance'),   'Assurance auto',        'Demandez un devis et comparez les offres de nos partenaires.'],
-      [$img('autosur/visite'),      'Visite technique',      'Prenez rendez-vous et suivez le statut de votre contrôle.'],
-      [$img('autosur/sos'),         'SOS Panne',             'Un dépanneur proche de vous, localisé en temps réel.'],
+      ['vehicle',   'Mes véhicules',         'Une fiche par véhicule : immatriculation, châssis, assurance, historique.'],
+      ['documents', 'Coffre-fort numérique', 'Carte grise, attestation, factures : tout est rangé et accessible.'],
+      ['alerts',    'Alertes intelligentes', 'Notifications push, SMS et e-mail avant chaque échéance.'],
+      ['insurance', 'Assurance auto',        'Demandez un devis et comparez les offres de nos partenaires.'],
+      ['inspection','Visite technique',      'Prenez rendez-vous et suivez le statut de votre contrôle.'],
+      ['sos',       'SOS Panne',             'Un dépanneur proche de vous, localisé en temps réel.'],
     ];
   @endphp
 
   <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    @foreach ($services as [$img, $title, $text])
+    @foreach ($services as [$icon, $title, $text])
       <article class="rounded-3xl border border-brand-700/10 bg-white p-2.5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-        <div class="relative">
-          <x-photo :src="$img" :alt="$title" class="h-44 w-full rounded-2xl object-cover" />
+        <div class="relative flex h-44 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-200/50 via-brand-50 to-brand-400/30">
+          <div class="absolute h-32 w-32 rounded-full bg-white/70"></div>
+          <svg class="relative h-24 w-24 text-brand-700" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 96 96" aria-hidden="true">
+            @switch ($icon)
+              @case('vehicle')
+                <path d="m18 54 5-16a8 8 0 0 1 7-5h36a8 8 0 0 1 7 5l5 16v18H18V54Z" fill="currentColor" opacity=".1"/>
+                <path d="m18 54 5-16a8 8 0 0 1 7-5h36a8 8 0 0 1 7 5l5 16v18H18V54Z"/>
+                <path d="M25 51h46M31 34l-5 17m39-17 5 17M18 59h12m36 0h12"/>
+                <circle cx="30" cy="68" r="6" fill="currentColor"/>
+                <circle cx="66" cy="68" r="6" fill="currentColor"/>
+                <path d="M35 42h26" stroke="#95B1EE" stroke-width="5"/>
+                @break
+              @case('documents')
+                <path d="M28 17h27l14 14v46H28V17Z" fill="white"/>
+                <path d="M55 17v15h14M37 45h23M37 54h17"/>
+                <rect x="48" y="58" width="30" height="23" rx="6" fill="#E7F1A8"/>
+                <path d="M57 58v-4a6 6 0 0 1 12 0v4m-6 9v5"/>
+                @break
+              @case('alerts')
+                <path d="M25 65h46l-6-8V43a17 17 0 0 0-34 0v14l-6 8Z" fill="white"/>
+                <path d="M25 65h46l-6-8V43a17 17 0 0 0-34 0v14l-6 8Zm17 7a7 7 0 0 0 12 0"/>
+                <circle cx="70" cy="28" r="13" fill="#E7F1A8"/>
+                <path d="M70 21v8m0 5h.01"/>
+                @break
+              @case('insurance')
+                <path d="M48 15 73 25v19c0 17-11 28-25 37C34 72 23 61 23 44V25l25-10Z" fill="white"/>
+                <path d="m36 48 8 8 17-19"/>
+                <path d="m34 68-11 8 2-14m37 6 11 8-2-14" stroke="#95B1EE"/>
+                @break
+              @case('inspection')
+                <rect x="19" y="25" width="58" height="53" rx="8" fill="white"/>
+                <path d="M19 41h58M33 18v14m30-14v14"/>
+                <path d="M32 52h8m-8 12h8" stroke="#95B1EE" stroke-width="4"/>
+                <circle cx="62" cy="62" r="13" fill="#E7F1A8"/>
+                <path d="m56 62 4 4 8-9"/>
+                @break
+              @case('sos')
+                <path d="M48 78S25 56 25 39a23 23 0 1 1 46 0C71 56 48 78 48 78Z" fill="white"/>
+                <circle cx="48" cy="39" r="9" fill="#E7F1A8"/>
+                <path d="m37 67-8 8m25-8 8 8m-19-3 5-8 5 8"/>
+                <path d="M42 75h12"/>
+                @break
+            @endswitch
+          </svg>
           <span class="absolute right-3 top-3 rounded-full bg-brand-200 px-3 py-1 text-xs font-bold text-brand-900">Disponible</span>
         </div>
         <div class="px-3 pb-3 pt-4">
