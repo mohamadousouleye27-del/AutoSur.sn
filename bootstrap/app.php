@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         $middleware->alias(['role' => \App\Http\Middleware\RoleMiddleware::class]);
         $middleware->redirectUsersTo(fn () => route(auth()->user()->homeRoute()));
+        $middleware->trustProxies(at: '*');
 
         $middleware->alias([
         'role'    => \App\Http\Middleware\RoleMiddleware::class,
