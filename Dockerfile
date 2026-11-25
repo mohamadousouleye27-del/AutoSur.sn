@@ -77,8 +77,13 @@ RUN mkdir -p \
     && chmod -R 775 storage bootstrap/cache
 
 # Configuration Apache
-COPY docker/ports.conf /etc/apache2/ports.conf
-COPY docker/apache-vhost.conf /etc/apache2/sites-available/000-default.conf
+# Configuration Apache générée ici (évite les problèmes d'encodage des fichiers Windows)
+ENV PORT=10000
+RUN printf 'ServerName localhost\n' > /etc/apache2/conf-available/servername.conf \
+    && a2enconf servername \
+    && printf 'Listen ${PORT}\n' > /etc/apache2/ports.conf \
+    && printf '<VirtualHost *:${PORT}>\n    DocumentRoot /var/www/html/public\n    <Directory /var/www/html/public>\n        AllowOverride All\n        Require all granted\n        Options -Indexes +FollowSymLinks\n    </Directory>\n    ErrorLog /proc/self/fd/2\n    CustomLog /proc/self/fd/1 combined\n</VirtualHost>\n' > /etc/apache2/sites-available/000-default.conf
+    
 
 # Script de démarrage : fins de ligne Windows supprimées, lancé via sh
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
