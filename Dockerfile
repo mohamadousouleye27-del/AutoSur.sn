@@ -39,21 +39,19 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Extensions PHP nécessaires
+# mbstring, curl et OPcache sont déjà fournis (OPcache est intégré à PHP depuis la 8.5)
 RUN docker-php-ext-configure gd \
-    --with-freetype \
-    --with-jpeg \
-    --with-webp \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
     && docker-php-ext-install -j$(nproc) \
-    pdo_mysql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    zip \
-    intl \
-    opcache \
-    curl
+        pdo_mysql \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip \
+        intl
 
 # Modules Apache
 RUN a2enmod rewrite headers
