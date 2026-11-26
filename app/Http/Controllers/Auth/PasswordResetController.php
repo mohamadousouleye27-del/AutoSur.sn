@@ -22,41 +22,36 @@ class PasswordResetController extends Controller
 
     public function sendCode(Request $request)
     {
-        $request->merge(['phone' => Phone::normalize($request->input('phone'))]);
+        $request->validate(['login' => ['required', 'string', 'max:255']]);
 
-        $request->validate(
-            ['phone' => ['required', 'regex:/^\+2217[05678]\d{7}$/']],
-            ['phone.regex' => 'Numéro invalide. Exemple : 77 123 45 67.']
-        );
+        $identifier = $this->normalize($request->input('login'));
+        $user = $this->findUser($identifier);
 
-        $phone = $request->input('phone');
-        $user  = User::where('phone', $phone)->where('is_active', true)->first();
-
-        if ($user && $this->otp->canSend($user, 'reset')) {
+        if ($user && $user->email && $this->otp->canSend($user, 'reset')) {
             $this->otp->issue($user, 'reset');
         }
 
-        // Même réponse que le numéro existe ou non.
-        $request->session()->put('reset_phone', $phone);
+        // Même réponse que le compte existe ou non.
+        $request->session()->put('reset_login', $identifier);
 
         return redirect()->route('password.code')
-            ->with('status', "Si ce numéro correspond à un compte, un code vient d'être envoyé par SMS.");
+            ->with('status', "Si ce compte existe, un code vient d'être envoyé à son adresse e-mail.");
     }
 
     public function showReset(Request $request)
     {
-        if (! $request->session()->has('reset_phone')) {
+        if (! $request->session()->has('reset_login')) {
             return redirect()->route('password.forgot');
         }
 
-        return view('auth.reset', ['phone' => $request->session()->get('reset_phone')]);
+        return view('auth.reset', ['login' => $request->session()->get('reset_login')]);
     }
 
     public function reset(Request $request)
     {
-        $phone = $request->session()->get('reset_phone');
+        $identifier = $request->session()->get('reset_login');
 
-        if (! $phone) {
+        if (! $identifier) {
             return redirect()->route('password.forgot');
         }
 
@@ -65,7 +60,7 @@ class PasswordResetController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
-        $user   = User::where('phone', $phone)->where('is_active', true)->first();
+        $user   = $this->findUser($identifier);
         $status = $user ? $this->otp->check($user, 'reset', $data['code']) : 'invalid';
 
         if ($status === 'locked') {
@@ -79,8 +74,22 @@ class PasswordResetController extends Controller
 
         // Toutes les sessions ouvertes de ce compte sont fermées.
         DB::table('sessions')->where('user_id', $user->id)->delete();
-        $request->session()->forget('reset_phone');
+        $request->session()->forget('reset_login');
 
         return redirect()->route('login')->with('status', 'Mot de passe modifié. Vous pouvez vous connecter.');
+    }
+
+    private function normalize(string $login): string
+    {
+        $login = trim($login);
+
+        return str_contains($login, '@') ? strtolower($login) : Phone::normalize($login);
+    }
+
+    private function findUser(string $identifier): ?User
+    {
+        return User::where('is_active', true)
+            ->where(str_contains($identifier, '@') ? 'email' : 'phone', $identifier)
+            ->first();
     }
 }

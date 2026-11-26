@@ -27,7 +27,7 @@
 {{-- Double authentification --}}
 <section class="card mt-6 max-w-2xl !p-8">
   <div class="flex flex-wrap items-center justify-between gap-3">
-    <h2 class="text-lg font-extrabold">Double authentification (SMS)</h2>
+    <h2 class="text-lg font-extrabold">Double authentification (e-mail)</h2>
     @if (auth()->user()->two_factor_enabled)
       <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">Activée</span>
     @else
@@ -36,13 +36,14 @@
   </div>
 
   <p class="mt-2 text-sm text-brand-900/70">
-    À chaque connexion, un code envoyé par SMS au {{ auth()->user()->phone }} est demandé en plus du mot de passe.
+    À chaque connexion, un code envoyé par e-mail à {{ auth()->user()->maskedEmail() ?: "l'adresse de votre compte" }} est demandé en plus du mot de passe.
   </p>
 
-  @if (! $smsReady && ! auth()->user()->two_factor_enabled)
+  @if (! $mailReady && ! auth()->user()->two_factor_enabled)
     <p class="mt-3 rounded-2xl bg-amber-100 px-4 py-3 text-sm font-semibold text-amber-800">
-      Bientôt disponible : cette option sera activable dès que l'envoi de SMS sera en service.
+      Bientôt disponible : cette option sera activable dès que l'envoi d'e-mails sera en service.
     </p>
+  @endif
   @endif
 
   @error('two_factor')

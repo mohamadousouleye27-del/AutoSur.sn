@@ -107,4 +107,15 @@ class User extends Authenticatable
 
         return $average ? round($average, 1) : null;
     }
+
+    public function maskedEmail(): string
+    {
+        if (! $this->email) {
+            return '';
+        }
+
+        [$name, $domain] = explode('@', $this->email, 2);
+
+        return mb_substr($name, 0, 2) . str_repeat('•', max(mb_strlen($name) - 2, 1)) . '@' . $domain;
+    }
 }

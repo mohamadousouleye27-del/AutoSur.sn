@@ -28,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
         //
         if (app()->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+
+            \Illuminate\Support\Facades\Mail::extend('brevo', function (array $config) {
+                return new \App\Mail\Transport\BrevoTransport($config['key'] ?? '');
+            });
         }
+        
     }
 }

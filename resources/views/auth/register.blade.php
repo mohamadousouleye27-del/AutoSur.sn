@@ -5,7 +5,7 @@
 <section class="mx-auto max-w-xl px-6 py-10">
   <div class="card !p-8">
     <h1 class="text-3xl font-extrabold text-brand-700">Créer mon compte</h1>
-    <p class="mt-1 text-brand-900/70">Un code de vérification sera envoyé par SMS.</p>
+    <p class="mt-1 text-brand-900/70">Un code de vérification sera envoyé à votre adresse e-mail.</p>
 
     <form method="POST" action="{{ route('register') }}" class="mt-6 space-y-4">
       @csrf
@@ -40,7 +40,7 @@
       </div>
 
       <div>
-        <input type="email" name="email" value="{{ old('email') }}" placeholder="E-mail (facultatif)" class="input">
+        <input type="email" name="email" value="{{ old('email') }}" placeholder="Adresse e-mail (pour recevoir vos codes)" class="input" required>
         @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
       </div>
 

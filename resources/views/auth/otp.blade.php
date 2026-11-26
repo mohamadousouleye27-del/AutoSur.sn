@@ -1,12 +1,16 @@
 @extends('layouts.public')
-@section('title', 'Vérification : AutoSur.sn')
+@section('title', 'Vérification : AutoSur')
 
 @section('content')
 <section class="mx-auto max-w-md px-6 py-10">
   <div class="card !p-8 text-center">
-    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-200 text-3xl">📱</div>
-    <h1 class="mt-4 text-2xl font-extrabold text-brand-700">Vérifiez votre numéro</h1>
-    <p class="mt-2 text-sm text-brand-900/70">Entrez le code à 6 chiffres envoyé au <strong>{{ $phone }}</strong>.</p>
+    <h1 class="text-2xl font-extrabold text-brand-700">Vérifiez votre adresse e-mail</h1>
+    <p class="mt-2 text-sm text-brand-900/70">Entrez le code à 6 chiffres envoyé à <strong>{{ $email }}</strong>.</p>
+    <p class="mt-1 text-xs text-brand-900/50">Rien reçu après 2 minutes ? Regardez dans vos courriers indésirables.</p>
+
+    @if (session('otp_error'))
+      <p class="mt-4 rounded-2xl bg-red-100 px-4 py-2 text-sm font-medium text-red-700">{{ session('otp_error') }}</p>
+    @endif
 
     @if (session('status'))
       <p class="mt-4 rounded-2xl bg-brand-200 px-4 py-2 text-sm font-medium text-brand-700">{{ session('status') }}</p>

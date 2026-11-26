@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Envelope;
 
 class WelcomeMail extends Mailable
 {
-    public function __construct(public User $user, public string $verifyUrl) {}
+    public function __construct(public User $user, public string $loginUrl) {}
 
     public function envelope(): Envelope
     {

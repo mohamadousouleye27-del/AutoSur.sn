@@ -11,7 +11,7 @@ class SecurityController extends Controller
 {
     public function edit()
     {
-        return view('security.edit', ['smsReady' => $this->smsReady()]);
+        return view('security.edit', ['mailReady' => $this->mailReady()]);
     }
 
     public function updatePassword(Request $request)
@@ -46,10 +46,17 @@ class SecurityController extends Controller
 
         $user = $request->user();
 
-        if (! $user->two_factor_enabled && ! $this->smsReady()) {
-            return back()->withErrors([
-                'two_factor' => "La double authentification sera disponible dès que l'envoi de SMS sera activé sur la plateforme.",
-            ]);
+        if (! $user->two_factor_enabled) {
+            if (! $user->email || ! $user->email_verified_at) {
+                return back()->withErrors([
+                    'two_factor' => "Votre compte n'a pas d'adresse e-mail confirmée : c'est là que le code est envoyé.",
+                ]);
+            }
+            if (! $this->mailReady()) {
+                return back()->withErrors([
+                    'two_factor' => "La double authentification sera disponible dès que l'envoi d'e-mails sera configuré sur la plateforme.",
+                ]);
+            }
         }
 
         $user->forceFill(['two_factor_enabled' => ! $user->two_factor_enabled])->save();
@@ -59,9 +66,9 @@ class SecurityController extends Controller
             : 'Double authentification désactivée.');
     }
 
-    /** Évite de verrouiller des comptes quand aucun SMS ne peut réellement partir. */
-    private function smsReady(): bool
+    /** Évite de verrouiller des comptes quand aucun e-mail ne peut réellement partir. */
+    private function mailReady(): bool
     {
-        return app()->environment('local') || config('alerts.sms_driver') !== 'log';
+        return app()->environment('local') || ! in_array(config('mail.default'), ['log', 'array'], true);
     }
 }

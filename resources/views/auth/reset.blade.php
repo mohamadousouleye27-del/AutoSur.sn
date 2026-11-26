@@ -5,7 +5,8 @@
 <section class="mx-auto max-w-md px-6 py-10">
   <div class="card !p-8">
     <h1 class="text-2xl font-extrabold text-brand-700">Nouveau mot de passe</h1>
-    <p class="mt-1 text-sm text-brand-900/70">Saisissez le code reçu par SMS au <strong>{{ $phone }}</strong>.</p>
+    <p class="mt-1 text-sm text-brand-900/70">Saisissez le code reçu par e-mail, puis votre nouveau mot de passe.</p>
+    <p class="mt-1 text-xs text-brand-900/50">Rien reçu après 2 minutes ? Regardez dans vos courriers indésirables.</p>
 
     @if (session('status'))
       <p class="mt-4 rounded-2xl bg-brand-200 px-4 py-2 text-sm font-medium text-brand-700">{{ session('status') }}</p>
@@ -34,7 +35,7 @@
 
     <form method="POST" action="{{ route('password.send') }}" class="mt-4 text-center">
       @csrf
-      <input type="hidden" name="phone" value="{{ $phone }}">
+      <input type="hidden" name="login" value="{{ $login }}">
       <button class="text-sm font-semibold text-brand-700 underline">Renvoyer le code</button>
     </form>
   </div>
