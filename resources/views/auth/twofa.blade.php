@@ -5,7 +5,7 @@
 <section class="mx-auto max-w-md px-6 py-10">
   <div class="card !p-8 text-center">
     <h1 class="text-2xl font-extrabold text-brand-700">Vérification en deux étapes</h1>
-    <p class="mt-2 text-sm text-brand-900/70">Entrez le code à 6 chiffres envoyé au <strong>{{ $phone }}</strong>.</p>
+    <p class="mt-2 text-sm text-brand-900/70">Entrez le code à 6 chiffres envoyé à <strong>{{ $email }}</strong>.</p>
 
     @if (session('status'))
       <p class="mt-4 rounded-2xl bg-brand-200 px-4 py-2 text-sm font-medium text-brand-700">{{ session('status') }}</p>

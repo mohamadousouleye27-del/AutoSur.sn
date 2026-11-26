@@ -20,7 +20,7 @@ class TwoFactorController extends Controller
             return redirect()->route('login');
         }
 
-        return view('auth.twofa', ['phone' => $user->phone]);
+        return view('auth.twofa', ['email' => $user->maskedEmail()]);
     }
 
     public function verify(Request $request)

@@ -11,11 +11,10 @@ Votre compte dépanneur est en cours de validation par notre équipe. Vous pourr
 Votre compte assureur est en cours de validation par notre équipe. Vous pourrez répondre aux demandes de devis dès sa validation.
 @break
 @default
-Votre compte est prêt. Ajoutez votre premier véhicule, rangez vos documents dans le coffre-fort et recevez des rappels avant chaque échéance.
+Votre adresse e-mail est confirmée et votre compte est prêt. Ajoutez votre premier véhicule, rangez vos documents dans le coffre-fort et recevez des rappels avant chaque échéance.
 @endswitch
 
-Confirmez votre adresse e-mail en ouvrant ce lien :
-{{ $verifyUrl }}
+Connexion : {{ $loginUrl }}
 
 Une question ? Répondez simplement à ce message.
 
