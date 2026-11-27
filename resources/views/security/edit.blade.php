@@ -35,7 +35,7 @@
     @endif
   </div>
 
-  <p class="mt-2 text-sm text-brand-900/70">
+    <p class="mt-2 text-sm text-brand-900/70">
     À chaque connexion, un code envoyé par e-mail à {{ auth()->user()->maskedEmail() ?: "l'adresse de votre compte" }} est demandé en plus du mot de passe.
   </p>
 
@@ -43,7 +43,6 @@
     <p class="mt-3 rounded-2xl bg-amber-100 px-4 py-3 text-sm font-semibold text-amber-800">
       Bientôt disponible : cette option sera activable dès que l'envoi d'e-mails sera en service.
     </p>
-  @endif
   @endif
 
   @error('two_factor')
